@@ -165,5 +165,11 @@ async def addFooter(str):
 
 """ + CHANNEL + """ """
     return str + footer
+  
+  async def addFooter(str):
+    footer = """
+
+""" + CHANNEL + """ """
+    return str + footer
 
 bot.run()
