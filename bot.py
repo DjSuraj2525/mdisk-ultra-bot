@@ -11,7 +11,6 @@ from bs4 import BeautifulSoup
 #from doodstream import DoodStream
 import requests
 import re
-import list
 
 API_ID = environ.get('API_ID')
 API_HASH = environ.get('API_HASH')
@@ -30,7 +29,7 @@ bot = Client('Doodstream bot',
 async def start(bot, message):
     await message.reply(
         f"**Hi, {message.chat.first_name} !!**\n\n"
-        "**I am your Personal MDisk Bot 🤗**")
+        "**I am your Personal MDisk Bot 🤗, Made by @Shashwat_Bhai💞 Send me a MDisk Post to see the Magic 😅**")
     
 @bot.on_message(filters.text & filters.private)
 async def Doodstream_uploader(bot, message):
@@ -83,7 +82,6 @@ async def Doodstream_uploader(bot, message):
             found = lst[c]
             break
         c += 1
-
     # Doodstream.com link
     Doodstream_video_id = list(found.split(":"))
     video_id = Doodstream_video_id[2]
@@ -91,7 +89,6 @@ async def Doodstream_uploader(bot, message):
     v_id = video_id[0]
     #v_len = len(v_id)
     #v_id = v_id[1:v_len - 2]
-
     v_url = 'https://vidzoop.blogspot.com/p/share-video.html?vid=' + v_id + '&m=1'
     v_url = url
     res = [str, v_url]
@@ -156,15 +153,14 @@ async def new_Doodstream_url(urls):
 
 
 async def remove_username(new_List):
-
-          
-          new_List = "geeks for geeks geeks geeks geeks"
-print(new_List.replace("e", "a"))
+    for i in new_List:
+        if('@' in i or 't.me' in i or 'https://bit.ly/abcd' in i or 'https://bit.ly/123abcd' in i or 'telegra.ph' in i):
+            new_List.remove(i)
+    return new_List
 
 async def addFooter(str):
     footer = """
-
 """ + CHANNEL + """ """
-    return str
+    return str + new_List
 
 bot.run()
