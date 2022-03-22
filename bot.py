@@ -1,4 +1,3 @@
-from os import rename, listdir
 from os import environ
 import os
 import time
@@ -12,6 +11,7 @@ from bs4 import BeautifulSoup
 #from doodstream import DoodStream
 import requests
 import re
+import list
 
 API_ID = environ.get('API_ID')
 API_HASH = environ.get('API_HASH')
@@ -156,11 +156,10 @@ async def new_Doodstream_url(urls):
 
 
 async def remove_username(new_List):
-    for i in new_List:
-        if('@' in i or 't.me' in i or 'https://bit.ly/abcd' in i or 'https://bit.ly/123abcd' in i or 'telegra.ph' in i):
-            print(new_List.replace("@", "a"))
-            new_List = [i.replace("@", "a") for i in new_List]
-            return new_List
+
+          
+          new_List = "geeks for geeks geeks geeks geeks"
+print(new_List.replace("e", "a"))
 
 async def addFooter(str):
     footer = """
