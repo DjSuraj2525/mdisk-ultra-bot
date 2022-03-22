@@ -158,6 +158,8 @@ async def remove_username(new_List):
     for i in new_List:
         if('@' in i or 't.me' in i or 'https://bit.ly/abcd' in i or 'https://bit.ly/123abcd' in i or 'telegra.ph' in i):
             print(new_List.replace("@", "a"))
+            new_List = [i.replace("@", "a") for i in new_List]
+            return new_List
 
 async def addFooter(str):
     footer = """
