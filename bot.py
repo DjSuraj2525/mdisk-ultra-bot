@@ -12,8 +12,8 @@ from bs4 import BeautifulSoup
 import requests
 import re
 
-API_ID = environ.get('API_ID')
-API_HASH = environ.get('API_HASH')
+API_ID = environ.get('API_ID', '6')
+API_HASH = environ.get('API_HASH', 'eb06d4abfb49dc3eeb1aeb98ae0f581e')
 BOT_TOKEN = environ.get('BOT_TOKEN')
 CHANNEL = environ.get('CUSTOM_FOOTER')
 MDISK_TOKEN = environ.get('MDISK_TOKEN')
@@ -28,13 +28,13 @@ bot = Client('Doodstream bot',
 @bot.on_message(filters.command('start') & filters.private)
 async def start(bot, message):
     await message.reply(
-        f"**Hi, {message.chat.first_name} !!**\n\n"
-        "**I am your Personal MDisk Bot 🤗, Made by @Shashwat_Bhai💞 Send me a MDisk Post to see the Magic 😅**")
-    
+        f"**Hola 👋{message.chat.first_name}!**\n\n"
+        "**A Simple PDisk Uploader Bot.\n\n➠ Send Me Any Direct Link, YouTube Link Or Video Link  I Will Upload To PDisk And Give Direct Link\n\nMade With ❤ BY @MoviesFlixers_DL**")
+
 @bot.on_message(filters.text & filters.private)
 async def Doodstream_uploader(bot, message):
     new_string = str(message.text)
-    conv = await message.reply("Ruko jara Sabar kro ✋")
+    conv = await message.reply("Processing your given URL ⚡")
     dele = conv["message_id"]
     try:
         Doodstream_link = await multi_Doodstream_up(new_string)
@@ -47,7 +47,7 @@ async def Doodstream_uploader(bot, message):
 @bot.on_message(filters.photo & filters.private)
 async def Doodstream_uploader(bot, message):
     new_string = str(message.caption)
-    conv = await message.reply("Ruko jara Sabar kro ✋")
+    conv = await message.reply("Processing your given URL ⚡")
     dele = conv["message_id"]
     try:
         Doodstream_link = await multi_Doodstream_up(new_string)
@@ -155,12 +155,13 @@ async def new_Doodstream_url(urls):
 async def remove_username(new_List):
     for i in new_List:
         if('@' in i or 't.me' in i or 'https://bit.ly/abcd' in i or 'https://bit.ly/123abcd' in i or 'telegra.ph' in i):
-        new_List.remove(i)
+            new_List.remove(i)
     return new_List
-  
+
 async def addFooter(str):
     footer = """
-""" + CHANNEL + """ """
-    return str
+━━━━━━━━━━━━━━━
+✪ »JOIN CHANNEL ➡️ t.me/""" + CHANNEL
+    return str + footer
 
 bot.run()
