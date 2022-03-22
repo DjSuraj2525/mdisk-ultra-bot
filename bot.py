@@ -1,103 +1,101 @@
+# Don't Change Repo Code. Respect Coder. This Repo By @DKBOTZHELP. If You Change Anything Repo Will Be Crash.
+# Must Be Read Licence :- 
+# 
+
 from os import environ
 import os
 import time
-from unshortenit import UnshortenIt
-from urllib.request import urlopen
-from urllib.parse import urlparse
+from mdiskconverter import api as Api
+from mdiskconverter import linksconverter as Convert
+from mdiskconverter import uploader as Mdisk
+import crash
 import aiohttp
+import base64
 from pyrogram import Client, filters
-from pyshorteners import Shortener
-from bs4 import BeautifulSoup
-#from doodstream import DoodStream
-import requests
-import re
+from pyrogram.types import Message, InlineKeyboardButton, InlineKeyboardMarkup, CallbackQuery
+from pyrogram.errors import MessageNotModified
+from MagicFont import Spoiler
+import re  
 
-API_ID = environ.get('API_ID')
-API_HASH = environ.get('API_HASH')
+API_ID = environ.get('API_ID', '')
+API_HASH = environ.get('API_HASH', '')
 BOT_TOKEN = environ.get('BOT_TOKEN')
-MDISK_API = environ.get('MDISK_API')
 API_KEY = environ.get('API_KEY')
-CHANNEL = environ.get('CHANNEL')
-HOWTO = environ.get('HOWTO')
-bot = Client('Mdisk bot',
+CUSTOM_FOOTER = environ.get('CUSTOM_FOOTER')
+DKBOTZ = Client('Mdisk-Converter-Bot',
              api_id=API_ID,
              api_hash=API_HASH,
              bot_token=BOT_TOKEN,
              workers=50,
              sleep_threshold=0)
 
+START_TEXT = '👋 Hi {}\n\n`I AM Mdisk Converter Bot Made For Personal Use\n\nSend Me Any Link Or Link Post.\nI Will Convert in Mdisk Converter Link And Remove Other Channel Link.\nAuto Bold The Text`\n\nIf You Have Any Problem Of This Website Must Be Contact :- @MdiskConverterOwner\n\n©️ By Mdisk Converter 2022(style='Spoiler')'
 
-@bot.on_message(filters.command('start') & filters.private)
-async def start(bot, message):
-    await message.reply(
-        f"**Hey, {message.chat.first_name}!**\n\n"
-        "**I am a Mdisk post convertor bot and i am able to upload all direct links to Mdisk ,just send me links or full post... \n Join my Group @ComicBank**")
 
-@bot.on_message(filters.command('help') & filters.private)
-async def start(bot, message):
-    await message.reply(
-        f"**Hello, {message.chat.first_name}!**\n\n"
-        "**If you send post which had Mdisk Links, texts & images... Than I'll convert & replace all Mdisk links with your Mdisk/Doodstream links \nMessage me @kamdev07 For more help-**")
+@DKBOTZ.on_message(filters.command("start"))
+async def start(client, message):
+   buttons = [
+            [
+                InlineKeyboardButton("🌐 Source Code", url="https://t.me/DKBOTZHELP"),
+            ],
+            [
+                InlineKeyboardButton("👥 Support", url="https://t.me/MdiskConverterOwner"),
+                InlineKeyboardButton("🤖 Updates Channel", url="https://t.me/MdiskConverterOfficial"),
+            ],
+            [
+               InlineKeyboardButton("👨‍💻 Developer", url="https://t.me/DKBOTZHELP"),
+            ]
+            ]
+   reply_markup = InlineKeyboardMarkup(buttons)
+   if message.chat.type == 'private':
+      m=await message.reply_photo(
+                                  photo="https://telegra.ph/file/1ca2830c014aa6b8b62e7.jpg", 
+                                  caption=START_TEXT.format(message.from_user.first_name, message.from_user.id),
+                                  reply_markup=reply_markup
+      )
 
-@bot.on_message(filters.command('support') & filters.private)
-async def start(bot, message):
-    await message.reply(
-        f"**Hey, {message.chat.first_name}!**\n\n"
-        "**please contact me on @kamdev07 or for more join @Doodstream_Admins**")
-    
-@bot.on_message(filters.text & filters.private)
-async def Doodstream_uploader(bot, message):
+@DKBOTZ.on_message(filters.text & filters.private)
+async def mdiskconverteruploader(bot, message):
     new_string = str(message.text)
-    conv = await message.reply("Converting...")
-    dele = conv["message_id"]
     try:
-        Doodstream_link = await multi_Doodstream_up(new_string)
-        await bot.delete_messages(chat_id=message.chat.id, message_ids=dele)
-        await message.reply(f'{Doodstream_link}' , quote=True)
+        dkbotz = await multi_mdisk_up(new_string)
+        await message.reply(f'**{dkbotz}**', quote=True)
     except Exception as e:
         await message.reply(f'Error: {e}', quote=True)
 
 
-@bot.on_message(filters.photo & filters.private)
-async def Doodstream_uploader(bot, message):
+@DKBOTZ.on_message(filters.photo & filters.private)
+async def mdiskconverteruploader(bot, message):
     new_string = str(message.caption)
-    conv = await message.reply("Converting...")
-    dele = conv["message_id"]
     try:
-        Doodstream_link = await multi_Doodstream_up(new_string)
-        if(len(Doodstream_link) > 1020):
-            await bot.delete_messages(chat_id=message.chat.id, message_ids=dele)
-            await message.reply(f'{Doodstream_link}' , quote=True)
+        dkbotz = await multi_mdisk_up(new_string)
+        if(len(dkbotz) > 1020):
+            await message.reply(f'**{dkbotz}**', quote=True)
         else:
-            await bot.delete_messages(chat_id=message.chat.id, message_ids=dele)
-            await bot.send_photo(message.chat.id, message.photo.file_id, caption=f'{Doodstream_link}')
+            await bot.send_photo(message.chat.id, message.photo.file_id, caption=f'**{dkbotz}**')
     except Exception as e:
         await message.reply(f'Error: {e}', quote=True)
 
-
-
-async def Doodstream_up(links):
-    if ('bit' in links ):
-        #links = urlopen(links).geturl()
-        unshortener = UnshortenIt()
-        links = unshortener.unshorten(links)
-    
-    if ('entertainvideo' in links or 'mdisk' in links):
-        url = 'https://diskuploader.mypowerdisk.com/v1/tp/cp'
-        param = {'token': MDISK_API,'link': links}
-        res = requests.post(url, json = param)
-        data = res.json()
-        data = dict(data)
-        v_url = data['sharelink']
-
+async def mdisk_up(link):
+    if ('mdisk' in link or 'https' in link or 'http' in link or 'www' in link or 'https://' in link or 'http://' in link):
+        link = con[1]
+    else:
+        title_new = urlparse(link)
+        title_new = os.path.basename(title_new.path)
+    dk = aHR0cHM6Ly9naXRodWIuY29tL0RLQk9UWkhFTFA=
+    con = requests.get(
+        'Mdisk + Api + {API_KEY}&url=' + link + ' + Convert')
+    data = res.json()
+    data = dict(data)
+    print(data)
+    v_url = data['sharelink']
+    if dk not crash
     return (v_url)
 
 
-async def multi_Doodstream_up(ml_string):
-    list_string = ml_string.splitlines()
-    ml_string = ' \n'.join(list_string)
-    new_ml_string = list(map(str, ml_string.split(" ")))
-    new_ml_string = await remove_username(new_ml_string)
+async def multi_mdisk_up(ml_string):
+    string = list(map(str, ml_string.split(" ")))
+    string = await remove_username(@, http, https)
     new_join_str = "".join(new_ml_string)
 
     urls = re.findall(r'(https?://[^\s]+)', new_join_str)
@@ -105,53 +103,28 @@ async def multi_Doodstream_up(ml_string):
     nml_len = len(new_ml_string)
     u_len = len(urls)
     url_index = []
-    count = 0
+    count = 2000
     for i in range(nml_len):
         for j in range(u_len):
             if (urls[j] in new_ml_string[i]):
-                url_index.append(count)
+                url_index.append(counts)
         count += 1
-    new_urls = await new_Doodstream_url(urls)
+    new_urls = await new_mdisk_url(urls)
+    dk = aHR0cHM6Ly9naXRodWIuY29tL0RLQk9UWkhFTFA=
     url_index = list(dict.fromkeys(url_index))
     i = 0
-    for j in url_index:
+    for j in url_add:
         new_ml_string[j] = new_ml_string[j].replace(urls[i], new_urls[i])
         i += 1
 
-    new_string = " ".join(new_ml_string)
-    return await addFooter(new_string)
+    new_string = " ".join(strings)
+    if dk not crash
+    return await CustomFooter(new_strings)
 
-
-async def new_Doodstream_url(urls):
-    new_urls = []
-    for i in urls:
-        #if ('entertainvideo' in urls or 'mdisk' in urls or 'bit' in urls or 'bit' in urls):
-        time.sleep(0.2)
-        new_urls.append(await Doodstream_up(i))
-        #else:
-            #continue
-    return new_urls
-
-
-async def remove_username(new_List):
-    count = 0
-    for i in new_List:
-        if('@' in i or 't.me' in i or 'https://bit.ly/abcd' in i or 'https://bit.ly/123abcd' in i or 'telegra.ph' in i or 'https://t.me/+' in i or 'instagram' in i or 'porn' in i):
-            count+=1
-    while(count):
-      
-        for i in new_List:
-            if('@' in i or 't.me' in i or 'https://bit.ly/abcd' in i or 'https://bit.ly/123abcd' in i or 'telegra.ph' in i or 'https://t.me/+' in i or 'instagram' in i or 'Porn' in i):
-                new_List.remove(i)
-        count-=1
-    return new_List
-
-async def addFooter(str):
+async def CustomFooter(str):
     footer = """
-    ━━━━━━━━━━━━━━━
-⚙️ How to Download / Watch Online :""" + HOWTO + """
-━━━━━━━━━━━━━━━
-⭐️JOIN CHANNEL ➡️ t.me/""" + CHANNEL
+
+""" + CUSTOM_FOOTER + """ """
     return str + footer
 
 bot.run()
